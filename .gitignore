@@ -1,0 +1,8 @@
+/uptrack
+/bin/
+*.exe
+*.test
+*.out
+.idea/
+.vscode/
+.env

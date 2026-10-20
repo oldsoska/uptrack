@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="60">
+  <title>Status</title>
+  <style>
+    :root {
+      --bg: #f6f7f9; --surface: #fff; --text: #1c1f24; --muted: #6b7280; --border: #dde1e6;
+      --good: #12b76a; --warn: #f79009; --bad: #f04438; --none: #d0d5dd;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111317; --surface: #1b1e24; --text: #e8eaed; --muted: #9aa1ac; --border: #2e333b;
+        --good: #32d583; --warn: #fdb022; --bad: #f97066; --none: #3a3f48;
+        color-scheme: dark;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 40px 16px; }
+    h1 { font-size: 26px; margin: 0 0 20px; }
+    .banner { padding: 14px 18px; border-radius: 10px; color: #fff; font-weight: 600; margin-bottom: 24px; }
+    .banner.good { background: var(--good); }
+    .banner.bad { background: var(--bad); }
+    .monitor { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .name { font-weight: 600; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+    .uptime { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+    .bars { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; margin-top: 12px; height: 30px; }
+    .bars span { border-radius: 2px; }
+    .good { background: var(--good); } .warn { background: var(--warn); } .bad { background: var(--bad); } .none { background: var(--none); }
+    .legend { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    footer { color: var(--muted); font-size: 13px; margin-top: 24px; }
+    .empty { color: var(--muted); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>System status</h1>
+  {{if .Monitors}}
+    {{if .AllUp}}
+      <div class="banner good">All systems operational</div>
+    {{else}}
+      <div class="banner bad">Some systems are down</div>
+    {{end}}
+    {{range .Monitors}}
+      <section class="monitor">
+        <div class="row">
+          <span class="name"><span class="dot {{statusClass .Status}}"></span>{{.Name}}</span>
+          <span class="uptime">{{percent .Uptime24}} uptime, last 24 h</span>
+        </div>
+        <div class="bars" role="img" aria-label="Daily uptime for the last {{$.Days}} days">
+          {{range .Bars}}<span class="{{barClass .}}" title="{{barTitle .}}"></span>{{end}}
+        </div>
+        <div class="legend"><span>{{$.Days}} days ago</span><span>Today</span></div>
+      </section>
+    {{end}}
+  {{else}}
+    <p class="empty">No monitors yet.</p>
+  {{end}}
+  <footer>Updated {{.UpdatedAt.Format "2006-01-02 15:04 MST"}} · checked by Uptrack</footer>
+</main>
+</body>
+</html>
